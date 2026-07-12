@@ -1,0 +1,7 @@
+mlx-whisper
+sounddevice
+numpy
+pynput
+requests
+pyyaml
+rumps

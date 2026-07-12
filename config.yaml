@@ -1,0 +1,55 @@
+# Whisper Flow configuration
+
+# Push-to-talk key (hold to record, release to transcribe).
+# Valid names: alt_r, alt_l, cmd_r, cmd_l, ctrl_r, shift_r, f13
+hotkey: alt_l
+
+# Microphone sample rate fed to Whisper (must be 16000).
+sample_rate: 16000
+
+# Local ASR model (mlx-whisper, downloaded from HuggingFace on first run).
+# Fastest -> most accurate:
+#   mlx-community/whisper-base.en-mlx          (fast, English-only, less accurate)
+#   mlx-community/whisper-small.en-mlx         (good middle ground, English-only)
+#   mlx-community/whisper-large-v3-turbo-8bit  (turbo accuracy, smaller/faster)
+#   mlx-community/whisper-large-v3-turbo       (default: most accurate for speed)
+asr_model: mlx-community/whisper-large-v3-turbo
+
+# Spoken language ("en" etc). Pinning it skips per-clip language detection,
+# which is faster. Use null to auto-detect / mix languages.
+language: en
+
+# LLM cleanup step (Ollama). If unreachable, dictation falls back to the raw
+# transcript so it never fails.
+# Also handles formatting: spoken enumerations ("we need to X and then Y and
+# also Z") become numbered lists, and dictated symbol names become symbols
+# ("tilde slash dot zshrc" -> ~/.zshrc, "at sign" -> @). Both need cleanup
+# enabled -- raw fallback keeps the spoken words.
+# model: qwen2.5:3b tested notably more faithful than llama3.2:3b at cleaning
+# without rewriting meaning (llama flipped questions into statements/answers).
+cleanup:
+  enabled: true
+  url: http://localhost:11434
+  model: qwen2.5:3b
+  timeout: 15
+
+# Text injection into the active app.
+# method: paste (clipboard + Cmd+V, reliable) or type (synthetic keystrokes,
+# slower but leaves the clipboard untouched).
+inject:
+  method: paste
+  restore_clipboard: true
+  # Wait before restoring the old clipboard -- too short and slow apps paste
+  # the OLD clipboard contents instead of the dictation.
+  paste_delay: 0.6
+
+# Menu bar indicator (🎙 idle / 🔴 recording / ⏳ transcribing) + feedback sounds.
+# bubble: floating pill at the bottom-center of the screen while recording /
+# transcribing (Wispr Flow style), click-through, visible on all Spaces.
+indicator:
+  menubar: true
+  sounds: true
+  bubble: true
+
+# Load the Whisper model at startup so the first dictation is instant.
+prewarm: true
